@@ -1,5 +1,6 @@
 "use client";
 
+import { Download, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { downloadQrCode, qrCodeUrl } from "@/lib/api";
 
@@ -56,25 +57,33 @@ export function QrCodeModal({ videoId, slug, onClose, getAccessToken }: QrCodeMo
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="flex w-full max-w-sm flex-col items-center gap-5 rounded-3xl bg-surface p-8 text-center shadow-xl"
+        className="relative flex w-full max-w-sm flex-col items-center gap-5 rounded-2xl border border-slate-200 bg-white p-7 text-center shadow-xl shadow-slate-900/10"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="font-serif text-xl text-foreground">QR code</h2>
+        <button
+          onClick={onClose}
+          aria-label="Fechar"
+          className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+        >
+          <X size={16} strokeWidth={2} />
+        </button>
 
-        <div className="flex h-56 w-56 items-center justify-center rounded-2xl bg-background p-4">
+        <h2 className="text-base font-semibold text-slate-900">QR code</h2>
+
+        <div className="flex h-52 w-52 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 p-4">
           {error ? (
-            <p className="text-sm text-accent">{error}</p>
+            <p className="text-sm text-red-600">{error}</p>
           ) : svg ? (
             <div
               className="h-full w-full [&>svg]:h-full [&>svg]:w-full"
               dangerouslySetInnerHTML={{ __html: svg }}
             />
           ) : (
-            <p className="text-sm text-foreground/60">Carregando...</p>
+            <div className="h-full w-full animate-pulse rounded-lg bg-slate-200" />
           )}
         </div>
 
@@ -82,25 +91,20 @@ export function QrCodeModal({ videoId, slug, onClose, getAccessToken }: QrCodeMo
           <button
             onClick={() => handleDownload("svg")}
             disabled={downloading !== null}
-            className="flex-1 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-background disabled:opacity-60"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
           >
-            {downloading === "svg" ? "Baixando..." : "Baixar SVG"}
+            <Download size={14} strokeWidth={2} />
+            {downloading === "svg" ? "Baixando..." : "SVG"}
           </button>
           <button
             onClick={() => handleDownload("png")}
             disabled={downloading !== null}
-            className="flex-1 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-background disabled:opacity-60"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-indigo-600/20 transition hover:bg-indigo-500 disabled:opacity-60"
           >
-            {downloading === "png" ? "Baixando..." : "Baixar PNG"}
+            <Download size={14} strokeWidth={2} />
+            {downloading === "png" ? "Baixando..." : "PNG"}
           </button>
         </div>
-
-        <button
-          onClick={onClose}
-          className="text-sm font-medium text-foreground/60 hover:text-foreground"
-        >
-          Fechar
-        </button>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { ACCEPTED_VIDEO_CONTENT_TYPES, MAX_VIDEO_SIZE_BYTES } from "@videogift/shared";
+import { ArrowLeft, Check, Download, Link2, UploadCloud, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState, type DragEvent, type FormEvent } from "react";
 import {
@@ -101,15 +102,24 @@ export default function NewVideoPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-6">
-      <h1 className="font-serif text-3xl text-foreground">Novo vídeo</h1>
+      <div>
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-900"
+        >
+          <ArrowLeft size={14} strokeWidth={2} />
+          Painel
+        </Link>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">Novo vídeo</h1>
+      </div>
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-5 rounded-3xl border border-border bg-surface p-8"
+        className="flex flex-col gap-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5"
       >
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="title" className="text-sm font-medium text-foreground">
-            Título (opcional)
+          <label htmlFor="title" className="text-sm font-medium text-slate-700">
+            Título <span className="font-normal text-slate-400">(opcional)</span>
           </label>
           <input
             id="title"
@@ -117,12 +127,12 @@ export default function NewVideoPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             disabled={stage === "uploading"}
-            className="rounded-xl border border-border bg-background px-3.5 py-2.5 text-foreground outline-none focus:border-accent disabled:opacity-60"
+            className="rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-60"
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium text-foreground">Vídeo</span>
+          <span className="text-sm font-medium text-slate-700">Vídeo</span>
 
           {!file ? (
             <label
@@ -133,26 +143,20 @@ export default function NewVideoPage() {
               }}
               onDragLeave={() => setDragging(false)}
               onDrop={handleDrop}
-              className={`flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-4 py-10 text-center transition ${
-                dragging ? "border-accent bg-accent/5" : "border-border bg-background"
+              className={`flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed px-4 py-10 text-center transition ${
+                dragging
+                  ? "border-indigo-500 bg-indigo-50/50"
+                  : "border-slate-200 bg-slate-50 hover:border-slate-300"
               }`}
             >
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                className="text-secondary"
-              >
-                <path d="M12 16V4M12 4 7 9M12 4l5 5" />
-                <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
-              </svg>
-              <p className="text-sm text-foreground">
-                Arraste o vídeo aqui ou <span className="text-accent">selecione um arquivo</span>
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm shadow-slate-900/5">
+                <UploadCloud size={20} strokeWidth={1.75} className="text-indigo-600" />
+              </div>
+              <p className="text-sm text-slate-700">
+                Arraste o vídeo aqui ou{" "}
+                <span className="font-medium text-indigo-600">selecione um arquivo</span>
               </p>
-              <p className="text-xs text-foreground/50">MP4, MOV ou WebM · até 100MB</p>
+              <p className="text-xs text-slate-400">MP4, MOV ou WebM · até 100MB</p>
               <input
                 id="file"
                 type="file"
@@ -167,17 +171,18 @@ export default function NewVideoPage() {
                 <video
                   src={previewUrl}
                   controls
-                  className="max-h-64 w-full rounded-2xl bg-black"
+                  className="max-h-64 w-full rounded-xl bg-black"
                 />
               )}
               <div className="flex items-center justify-between text-sm">
-                <span className="truncate text-foreground/70">{file.name}</span>
+                <span className="truncate text-slate-500">{file.name}</span>
                 {stage === "form" && (
                   <button
                     type="button"
                     onClick={() => handleFile(null)}
-                    className="shrink-0 font-medium text-accent"
+                    className="flex shrink-0 items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-900"
                   >
+                    <X size={13} strokeWidth={2} />
                     Trocar
                   </button>
                 )}
@@ -188,22 +193,22 @@ export default function NewVideoPage() {
 
         {stage === "uploading" && (
           <div className="flex flex-col gap-1.5">
-            <div className="h-2 w-full overflow-hidden rounded-full bg-background">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
               <div
-                className="h-full rounded-full bg-accent transition-all"
+                className="h-full rounded-full bg-indigo-600 transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-xs text-foreground/60">Enviando... {progress}%</p>
+            <p className="text-xs text-slate-500">Enviando... {progress}%</p>
           </div>
         )}
 
-        {error && <p className="text-sm text-accent">{error}</p>}
+        {error && <p className="text-sm text-red-600">{error}</p>}
 
         <button
           type="submit"
           disabled={stage === "uploading"}
-          className="rounded-full bg-accent px-4 py-2.5 font-medium text-accent-foreground transition hover:opacity-90 disabled:opacity-60"
+          className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-600/20 transition hover:bg-indigo-500 disabled:opacity-60"
         >
           {stage === "uploading" ? "Enviando..." : "Enviar vídeo"}
         </button>
@@ -273,24 +278,26 @@ function SuccessView({ videoId, slug }: { videoId: string; slug: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-6 text-center">
-      <div>
-        <h1 className="font-serif text-3xl text-foreground">Vídeo enviado!</h1>
-        <p className="mt-1 text-sm text-foreground/70">
-          Seu QR code está pronto para ir pra gráfica.
-        </p>
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50">
+        <Check size={22} strokeWidth={2.5} className="text-emerald-600" />
       </div>
 
-      <div className="flex w-full flex-col items-center gap-5 rounded-3xl border border-border bg-surface p-8">
-        <div className="flex h-56 w-56 items-center justify-center rounded-2xl bg-background p-4">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Vídeo enviado!</h1>
+        <p className="mt-1 text-sm text-slate-500">Seu QR code está pronto para ir pra gráfica.</p>
+      </div>
+
+      <div className="flex w-full flex-col items-center gap-5 rounded-xl border border-slate-200 bg-white p-7 shadow-sm shadow-slate-900/5">
+        <div className="flex h-52 w-52 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 p-4">
           {error ? (
-            <p className="text-sm text-accent">{error}</p>
+            <p className="text-sm text-red-600">{error}</p>
           ) : svg ? (
             <div
               className="h-full w-full [&>svg]:h-full [&>svg]:w-full"
               dangerouslySetInnerHTML={{ __html: svg }}
             />
           ) : (
-            <p className="text-sm text-foreground/60">Carregando...</p>
+            <div className="h-full w-full animate-pulse rounded-lg bg-slate-200" />
           )}
         </div>
 
@@ -298,28 +305,34 @@ function SuccessView({ videoId, slug }: { videoId: string; slug: string }) {
           <button
             onClick={() => handleDownload("svg")}
             disabled={downloading !== null}
-            className="flex-1 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-background disabled:opacity-60"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
           >
-            {downloading === "svg" ? "Baixando..." : "Baixar SVG"}
+            <Download size={14} strokeWidth={2} />
+            {downloading === "svg" ? "Baixando..." : "SVG"}
           </button>
           <button
             onClick={() => handleDownload("png")}
             disabled={downloading !== null}
-            className="flex-1 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-background disabled:opacity-60"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
           >
-            {downloading === "png" ? "Baixando..." : "Baixar PNG"}
+            <Download size={14} strokeWidth={2} />
+            {downloading === "png" ? "Baixando..." : "PNG"}
           </button>
         </div>
 
         <button
           onClick={handleCopyLink}
-          className="w-full rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-accent-foreground transition hover:opacity-90"
+          className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-600/20 transition hover:bg-indigo-500"
         >
+          {copied ? <Check size={15} strokeWidth={2} /> : <Link2 size={15} strokeWidth={2} />}
           {copied ? "Link copiado!" : "Copiar link"}
         </button>
       </div>
 
-      <Link href="/dashboard" className="text-sm font-medium text-foreground/60 hover:text-foreground">
+      <Link
+        href="/dashboard"
+        className="text-sm font-medium text-slate-500 hover:text-slate-900"
+      >
         Voltar ao painel
       </Link>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import type { VideoListItemDto, VideoStatus } from "@videogift/shared";
+import { Check, Download, Link2, QrCode, Trash2, Video } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { downloadQrCode, deleteVideo } from "@/lib/api";
@@ -13,10 +14,16 @@ const STATUS_LABEL: Record<VideoStatus, string> = {
   error: "Erro",
 };
 
+const STATUS_DOT: Record<VideoStatus, string> = {
+  processing: "bg-amber-500",
+  ready: "bg-emerald-500",
+  error: "bg-red-500",
+};
+
 const STATUS_CLASS: Record<VideoStatus, string> = {
-  processing: "bg-secondary/20 text-secondary",
-  ready: "bg-accent/15 text-accent",
-  error: "bg-red-100 text-red-700",
+  processing: "bg-amber-50 text-amber-700",
+  ready: "bg-emerald-50 text-emerald-700",
+  error: "bg-red-50 text-red-700",
 };
 
 async function getAccessToken(): Promise<string | null> {
@@ -78,8 +85,8 @@ export function VideoCard({ video }: { video: VideoListItemDto }) {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-3xl border border-border bg-surface shadow-sm">
-      <div className="flex aspect-video items-center justify-center bg-background">
+    <div className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:shadow-md hover:shadow-slate-900/5">
+      <div className="relative flex aspect-video items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         {video.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -88,34 +95,22 @@ export function VideoCard({ video }: { video: VideoListItemDto }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <svg
-            width="40"
-            height="40"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            className="text-secondary"
-          >
-            <rect x="3" y="5" width="14" height="14" rx="3" />
-            <path d="m17 9 4-2v10l-4-2" />
-          </svg>
+          <Video size={30} strokeWidth={1.5} className="text-slate-300" />
         )}
+
+        <span
+          className={`absolute right-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium ${STATUS_CLASS[video.status]}`}
+        >
+          <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[video.status]}`} />
+          {STATUS_LABEL[video.status]}
+        </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-serif text-lg text-foreground">
-            {video.title ?? "Sem título"}
-          </h3>
-          <span
-            className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_CLASS[video.status]}`}
-          >
-            {STATUS_LABEL[video.status]}
-          </span>
-        </div>
-
-        <p className="text-xs text-foreground/60">
+      <div className="flex flex-1 flex-col gap-1 p-4">
+        <h3 className="truncate text-sm font-semibold text-slate-900">
+          {video.title ?? "Sem título"}
+        </h3>
+        <p className="text-xs text-slate-400">
           {new Date(video.createdAt).toLocaleDateString("pt-BR", {
             day: "2-digit",
             month: "short",
@@ -123,34 +118,31 @@ export function VideoCard({ video }: { video: VideoListItemDto }) {
           })}
         </p>
 
-        {error && <p className="text-xs text-accent">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
 
-        <div className="mt-auto flex flex-wrap gap-2 pt-2">
-          <button
-            onClick={() => setShowQr(true)}
-            className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-background"
-          >
-            Ver QR
-          </button>
-          <button
-            onClick={handleDownload}
-            className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-background"
-          >
-            Baixar QR
-          </button>
-          <button
-            onClick={handleCopyLink}
-            className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-background"
-          >
-            {copied ? "Copiado!" : "Copiar link"}
-          </button>
-          <button
+        <div className="mt-3 flex items-center gap-1 border-t border-slate-100 pt-3">
+          <ActionButton label="Ver QR" onClick={() => setShowQr(true)}>
+            <QrCode size={15} strokeWidth={1.75} />
+          </ActionButton>
+          <ActionButton label="Baixar QR" onClick={handleDownload}>
+            <Download size={15} strokeWidth={1.75} />
+          </ActionButton>
+          <ActionButton label={copied ? "Copiado!" : "Copiar link"} onClick={handleCopyLink}>
+            {copied ? (
+              <Check size={15} strokeWidth={2} className="text-emerald-600" />
+            ) : (
+              <Link2 size={15} strokeWidth={1.75} />
+            )}
+          </ActionButton>
+          <ActionButton
+            label="Deletar"
             onClick={handleDelete}
             disabled={deleting}
-            className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-accent transition hover:bg-background disabled:opacity-60"
+            danger
+            className="ml-auto"
           >
-            {deleting ? "Removendo..." : "Deletar"}
-          </button>
+            <Trash2 size={15} strokeWidth={1.75} />
+          </ActionButton>
         </div>
       </div>
 
@@ -163,5 +155,37 @@ export function VideoCard({ video }: { video: VideoListItemDto }) {
         />
       )}
     </div>
+  );
+}
+
+function ActionButton({
+  label,
+  onClick,
+  disabled,
+  danger,
+  className = "",
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  danger?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={label}
+      aria-label={label}
+      className={`flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition disabled:opacity-50 ${
+        danger
+          ? "hover:bg-red-50 hover:text-red-600"
+          : "hover:bg-slate-100 hover:text-slate-900"
+      } ${className}`}
+    >
+      {children}
+    </button>
   );
 }
