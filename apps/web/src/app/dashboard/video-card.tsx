@@ -37,9 +37,13 @@ export function VideoCard({ video }: { video: VideoListItemDto }) {
   const videoUrl = `${process.env.NEXT_PUBLIC_APP_URL}/v/${video.slug}`;
 
   async function handleCopyLink() {
-    await navigator.clipboard.writeText(videoUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(videoUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError("Não foi possível copiar o link.");
+    }
   }
 
   async function handleDownload() {

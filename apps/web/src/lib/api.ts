@@ -63,6 +63,45 @@ export function completeUpload(accessToken: string, id: string): Promise<void> {
   return request<void>(`/videos/${id}/complete`, accessToken, { method: "POST" });
 }
 
+export function uploadToR2(
+  uploadUrl: string,
+  file: File,
+  onProgress: (percent: number) => void,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", uploadUrl);
+    xhr.setRequestHeader("Content-Type", file.type);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        onProgress(Math.round((event.loaded / event.total) * 100));
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve();
+      } else {
+        reject(new Error("Falha no upload do vídeo"));
+      }
+    };
+    xhr.onerror = () => reject(new Error("Falha no upload do vídeo"));
+
+    xhr.send(file);
+  });
+}
+
+export async function fetchQrCodeSvg(accessToken: string, id: string): Promise<string> {
+  const res = await fetch(qrCodeUrl(id, "svg"), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) {
+    throw new ApiError(res.status, "Não foi possível gerar o QR code");
+  }
+  return res.text();
+}
+
 export function qrCodeUrl(id: string, format: "svg" | "png" = "svg"): string {
   return `${API_URL}/videos/${id}/qrcode?format=${format}`;
 }
