@@ -12,8 +12,16 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+function resolveAppUrl(): URL {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
+  } catch {
+    return new URL("http://localhost:3000");
+  }
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  metadataBase: resolveAppUrl(),
   title: "QR Memória",
   description: "Transforme um vídeo em uma lembrança que cabe numa caneca.",
 };
