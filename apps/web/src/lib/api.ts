@@ -1,6 +1,7 @@
 import type {
   CreateVideoRequestDto,
   CreateVideoResponseDto,
+  PublicVideoDto,
   VideoListItemDto,
 } from "@videogift/shared";
 
@@ -39,6 +40,19 @@ async function request<T>(
   }
 
   return res.json() as Promise<T>;
+}
+
+export async function getPublicVideo(slug: string): Promise<PublicVideoDto | null> {
+  const res = await fetch(`${API_URL}/public/videos/${slug}`, { cache: "no-store" });
+
+  if (res.status === 404) {
+    return null;
+  }
+  if (!res.ok) {
+    throw new ApiError(res.status, "Erro ao carregar o vídeo");
+  }
+
+  return res.json() as Promise<PublicVideoDto>;
 }
 
 export function listVideos(accessToken: string): Promise<VideoListItemDto[]> {
