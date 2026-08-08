@@ -18,10 +18,10 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-3.5 sm:px-8">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-semibold text-white">
-              Q
+              V
             </div>
             <span className="text-[15px] font-semibold tracking-tight text-slate-900">
-              QR Memória
+              VideoGift
             </span>
           </div>
 

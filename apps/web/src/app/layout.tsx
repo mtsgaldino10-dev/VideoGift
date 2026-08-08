@@ -22,7 +22,7 @@ function resolveAppUrl(): URL {
 
 export const metadata: Metadata = {
   metadataBase: resolveAppUrl(),
-  title: "QR Memória",
+  title: "VideoGift",
   description: "Transforme um vídeo em uma lembrança que cabe numa caneca.",
 };
 

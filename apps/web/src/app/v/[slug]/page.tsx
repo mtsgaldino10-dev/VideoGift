@@ -10,7 +10,7 @@ export async function generateMetadata({
   const video = await getPublicVideo(slug);
 
   if (!video) {
-    return { title: "Vídeo não encontrado — QR Memória" };
+    return { title: "Vídeo não encontrado — VideoGift" };
   }
 
   const title = "Você recebeu uma mensagem especial 💌";
@@ -41,7 +41,7 @@ export default async function PublicVideoPage({ params }: PageProps<"/v/[slug]">
         <div className="w-full max-w-sm">
           <VideoPlayer src={video.playbackUrl} />
         </div>
-        <footer className="text-xs text-white/50">Feito com QR Memória</footer>
+        <footer className="text-xs text-white/50">Feito com VideoGift</footer>
       </div>
     </div>
   );
